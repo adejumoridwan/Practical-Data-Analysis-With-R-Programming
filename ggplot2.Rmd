@@ -1,0 +1,60 @@
+---
+title: "Data Visualization With ggplot2"
+author: "Adejumo Ridwan Suleiman"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Installing and Loading ggplot2
+```{r}
+#install.packages("ggplot2")
+#library(ggplot2)
+```
+
+# Diamonds dataset
+```{r}
+head(diamonds)
+```
+# Economics dataset
+```{r}
+head(economics)
+```
+
+# Barplots
+
+## Vertical Bar Plot
+```{r}
+# Most occurring diamonds (change fill with "fill = ", change line colour with "colour = ")
+diamonds |> 
+  ggplot(mapping = aes(x = cut)) +
+  geom_bar()
+```
+
+## Horizontal Bar Plot
+```{r}
+diamonds |> 
+  ggplot(mapping = aes(y = cut)) +
+  geom_bar()
+```
+
+## Stacked BarPlot
+```{r}
+diamonds |> 
+  ggplot(mapping = aes(x = cut, fill = clarity), position = "fill") +
+  geom_bar()
+```
+## Grouped Barplot
+```{r}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = clarity), position = "dodge")
+```
+
+# Boxplots
+
+# Comparing diamond cut and price
+```{r}
+diamonds |> 
+  ggplot(mapping = aes(x = cut, y = price, colour = clarity)) +
+  geom_boxplot()
+```
+
