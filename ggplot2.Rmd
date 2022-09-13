@@ -51,10 +51,46 @@ ggplot(data = diamonds) +
 
 # Boxplots
 
-# Comparing diamond cut and price
+## Comparing diamond cut and price
 ```{r}
 diamonds |> 
   ggplot(mapping = aes(x = cut, y = price, colour = clarity)) +
   geom_boxplot()
 ```
+
+# Histograms and Density Plots
+
+## Histogram
+```{r}
+#Check for the distribution of diamond carat
+diamonds |> 
+  ggplot(aes(x = carat)) +
+  geom_histogram()
+```
+
+## Density Plot
+```{r}
+# Check for the distribution of diamond price
+diamonds |> 
+  ggplot(aes(x = price)) +
+  geom_density()
+```
+
+# Labelling
+```{r}
+diamonds |> 
+  ggplot(mapping = aes(x = cut, y = price, colour = cut)) +
+  geom_boxplot() +
+  labs(x = "Cut", y = "Price", title = "Diamond Cut against Price", )
+```
+
+# Facetting
+```{r}
+diamonds |> 
+  ggplot(mapping = aes(y = cut, fill = cut)) +
+  geom_bar() +
+  facet_grid(color ~ .)
+```
+
+
 
