@@ -177,24 +177,32 @@ flights |>
 Mutating joins adds new variables to a data, from matching observations in another.
 ```{r}
 #inner join
-inner_join(x = avg_carrier_delay, y = airlines, by = "carrier") |> 
+inner_join(x = avg_carrier_delay, 
+           y = airlines, 
+           by = "carrier") |> 
   arrange(desc(avg_departure_delay))
 ```
 
 ```{r}
 #left join
-left_join(x = delay_arr_more_than_1000, y = airlines, by = "carrier")
+left_join(x = delay_arr_more_than_1000, 
+          y = airlines, 
+          by = "carrier")
 
 ```
 
 ```{r}
 #right join
-right_join(x = airlines, y = delay_arr_more_than_1000, by = "carrier")
+right_join(x = airlines, 
+           y = delay_arr_more_than_1000, 
+           by = "carrier")
 ```
 
 ```{r}
 #full join
-full_join(x = delay_arr_more_than_1000, y = airlines, by = "carrier")
+full_join(x = delay_arr_more_than_1000, 
+          y = airlines, 
+          by = "carrier")
 ```
 
 
@@ -217,7 +225,72 @@ semi_join(x = flights, y = top_dest)
 ```
 
 ```{r}
-anti_join(x = flights, y = top_dest)
+anti_join(x = flights, 
+          y = top_dest)
 ```
 
+# Exercise
+
+## Question 1
+Using the flights data set, which carrier have the highest average speed.
+Note: Remember to set na.rm = TRUE when calculating the average speed.
+1. Hawaiian Airlines Inc. 
+2. Virgin America
+3. Alaska Airlines Inc.
+4. Frontier Airlines Inc.
+5. United Air Lines Inc.
+```{r}
+avg_speed_table <- flights |> 
+  mutate(speed = distance/air_time*60) |> 
+  group_by(carrier) |> 
+  summarize(avg_speed = mean(speed, na.rm = TRUE)) |> 
+  arrange(desc(avg_speed))
+
+avg_speed_table
+
+inner_join(x = avg_speed_table, 
+           y = airlines, 
+           by = "carrier")
+```
+
+## Question 2
+How many flights in the month of December had no departure and  arrrival delay.
+1.39
+2.37
+3.32
+4.31
+5.34
+```{r}
+flights |> 
+  filter(arr_delay == 0 & dep_delay == 0 & month == 12)
+```
+
+## Question 3
+What is the distance covered in Kilometers for the flight with id number 4646 and tailnum N273WN. Note: A mile is 1.6 Kilometers
+1. 115.625 Kilometers
+2. 296 Kilometers
+3. 290 Kilometers
+4. 78 Kilometers
+5. 234 Kilometers
+```{r}
+flight_4646_N273WN <- flights |> 
+  filter(flight == 4646 & tailnum == "N273WN") |> 
+  mutate(dist_kil = distance*1.6)
+
+flight_4646_N273WN
+```
+
+## Question 4
+The manufacturer of the plane in Question 3 is:
+1. SIKORSKY
+2. EMBRAER
+3. AIRBUS
+4. BOEING
+5. GULFSTREAM AEROSPACE
+```{r}
+inner_join(x = flight_4646_N273WN,
+           y = planes, 
+           by = "tailnum") |> 
+  select(manufacturer)
+```
 
