@@ -8,7 +8,7 @@ output: html_document
 # Installing and Loading ggplot2
 ```{r}
 #install.packages("ggplot2")
-#library(ggplot2)
+library(ggplot2)
 ```
 
 # Diamonds dataset
@@ -98,5 +98,74 @@ diamonds |>
   facet_grid(color ~ .)
 ```
 
+
+#Exercise
+
+## Question 1
+Using a boxplot to visualize diamond cut against depth percentage. Which diamond cut have the highest median depth percentage.
+1. fair
+2. Good
+3. Very Good
+4. Premium
+5. Ideal
+```{r}
+diamonds |> 
+  ggplot(mapping = aes(x = cut, y = depth, color = cut)) +
+  geom_boxplot()
+```
+## Question 2
+Visualize using a line graph the change in United States Personal consumption expenditures in the economics data. In which year did the United States have the low personal consumption expenditure.
+1. 1967
+2. 2000
+3. 1999
+4. 2015
+5. 1990
+```{r}
+economics |> 
+  ggplot(mapping = aes(x = date, y = pce)) +
+  geom_line()
+```
+## Question 3
+Using a suitable bin width, visualize the distribution of diamond carat in the diamonds data set. In which range of carat value do most diamonds fall in.
+1. 0.5 - 1.5
+2. 4.0 - 5.0
+3. 2.0 - 3.5
+4. 0.0 - 0.5
+```{r}
+diamonds |> 
+  ggplot(mapping = aes(x = carat)) +
+  geom_histogram()
+```
+# Question 4
+Which of the folling can I use to plot a categorical variable against a categorical variable
+1. Boxplot
+2. Scatterplot
+3. Histogram
+4. LinePlot
+5. None of the Above
+
+# Question 5
+Which of the following codes in the options, will give the graph below.
+```{r}
+diamonds |> 
+  ggplot(mapping = aes(x = cut)) +
+  geom_bar()
+```
+
+```{r}
+diamonds |> 
+  ggplot() +
+  geom_bar(mapping = aes(x = cut))
+```
+
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut))
+```
+
+```{r}
+ggplot(data = diamonds, mapping = aes(x = cut)) +
+  geom_bar()
+```
 
 

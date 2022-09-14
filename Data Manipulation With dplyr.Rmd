@@ -102,8 +102,9 @@ range(flights$dep_delay, na.rm = TRUE)
 
 ```{r}
 # Check for flights with arrival and departuredelay above 1000
-flights |> 
+delay_arr_more_than_1000 <- flights |> 
   filter(arr_delay >= 1000 | dep_delay > 1000)
+delay_morethan_1000
 ```
 
 
@@ -173,12 +174,50 @@ flights |>
 
 
 # Mutating Joins
+Mutating joins adds new variables to a data, from matching observations in another.
 ```{r}
+#inner join
+inner_join(x = avg_carrier_delay, y = airlines, by = "carrier") |> 
+  arrange(desc(avg_departure_delay))
+```
 
+```{r}
+#left join
+left_join(x = delay_arr_more_than_1000, y = airlines, by = "carrier")
+
+```
+
+```{r}
+#right join
+right_join(x = airlines, y = delay_arr_more_than_1000, by = "carrier")
+```
+
+```{r}
+#full join
+full_join(x = delay_arr_more_than_1000, y = airlines, by = "carrier")
 ```
 
 
 # Filtering Joins
+Filtering joins filters matching observations, based on whether they match or not.
+1. semi_join() Keeps all observations in X that have a match in y
+2. anti_join() drops all observations in x that have a match in y
 
-# Set Operations
+```{r}
+# Top 10 most popular destination
+top_dest <- flights %>%
+  count(dest, sort = TRUE) %>%
+  head(10)
+top_dest
+```
+
+```{r}
+# using semi join to filter it out from flights data
+semi_join(x = flights, y = top_dest)
+```
+
+```{r}
+anti_join(x = flights, y = top_dest)
+```
+
 
