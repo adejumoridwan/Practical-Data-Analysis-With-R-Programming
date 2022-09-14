@@ -1,0 +1,184 @@
+---
+title: "Data Manipulation With Dplyr"
+author: "Adejumo Ridwan Suleiman"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Installing dplyr
+```{r}
+#install.packages("dplyr")
+library(dplyr)
+```
+
+
+# Installing nycflights13
+This data is an RDMS: a Relational Database Management System, it is made up of more than one table of data which are related to each other.
+- flights
+- airlines
+- airport
+- planes
+- weather
+
+```{r}
+#install.packages("nycflights13)
+library(nycflights13)
+```
+
+
+## Flights (Main Data)
+Details of all flights in the year 2013
+```{r}
+head(flights)
+```
+
+
+## Airlines Names
+```{r}
+head(airlines)
+```
+
+## Airport Metadata
+```{r}
+head(airports)
+```
+
+## Planes Metadata
+```{r}
+head(planes)
+```
+
+## Weather (hourly)
+```{r}
+head(weather)
+?weather
+```
+
+# Grouping and Summarizing
+Collapse Values in a dataset to a single summary
+```{r}
+# Average departure and arrival delay by month
+head(flights)
+avg_dep_arr_delay <- flights |> 
+  group_by(year, month) |> 
+  summarize(avg_departure_delay = mean(dep_delay, na.rm = TRUE),
+            avg_arrival_delay = mean(arr_delay, na.rm = TRUE))
+avg_dep_arr_delay
+```
+
+```{r}
+# Carriers with most average delay
+head(flights)
+avg_carrier_delay <- flights |> 
+  group_by(carrier) |> 
+  summarize(avg_departure_delay = mean(dep_delay, na.rm = TRUE),
+            avg_arrival_delay = mean(arr_delay, na.rm = TRUE))
+avg_carrier_delay
+```
+
+# Arranging 
+Reordering the rows of a dataset
+```{r}
+# Most Delayed Flight
+flights |> 
+  arrange(desc(dep_delay))
+```
+
+```{r}
+# Flights that left the earliest
+flights |> 
+  arrange(arr_delay)
+```
+
+# Filtering
+Pick observations by their values in a dataset
+
+```{r}
+# Check for the range of Arrival and departure delays
+range(flights$arr_delay, na.rm = TRUE)
+range(flights$dep_delay, na.rm = TRUE)
+
+```
+
+```{r}
+# Check for flights with arrival and departuredelay above 1000
+flights |> 
+  filter(arr_delay >= 1000 | dep_delay > 1000)
+```
+
+
+```{r}
+# Flights with no delay
+flights |> 
+  filter(arr_delay == 0 & dep_delay == 0)
+  
+```
+
+
+# Selecting
+Select variables by their names
+```{r}
+# Select dep_time, dep_delay, arr_time, arr_delay
+flights |> 
+  select(dep_time, dep_delay, arr_time, arr_delay)
+```
+
+```{r}
+# another way(select by their index numbers)
+flights |> 
+  select(4,6,7,9)
+```
+
+```{r}
+# another way
+flights |> 
+  select(dep_time:arr_delay, -c(5,8))
+```
+
+```{r}
+#select all variables except the arrival and departure delay
+flights |> 
+  select(!c(arr_delay, dep_delay))
+```
+
+
+## Selection Helpers
+1. starts_with()
+2. ends_with()
+3. contains()
+
+
+# Creating Variables
+```{r}
+#  Create New variable Speed
+flights |> 
+  mutate(speed = distance/air_time*60, .keep = "used") |> 
+  arrange(speed)
+```
+
+```{r}
+# Keep only speed variable
+flights |> 
+  transmute(speed = distance/air_time*60) |> 
+  arrange(speed)
+```
+
+# Renaming 
+
+```{r}
+# rename dep_time to departure time
+flights |> 
+  rename(departure_time = dep_time)
+```
+
+
+# Mutating Joins
+```{r}
+
+```
+
+
+# Filtering Joins
+
+# Set Operations
+
