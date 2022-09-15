@@ -54,187 +54,102 @@ head(weather)
 ?weather
 ```
 
-# Grouping and Summarizing
-Collapse Values in a dataset to a single summary
+#  Grouping and Summarizing
+
 ```{r}
-# Average departure and arrival delay by month
-head(flights)
-avg_dep_arr_delay <- flights |> 
-  group_by(year, month) |> 
-  summarize(avg_departure_delay = mean(dep_delay, na.rm = TRUE),
-            avg_arrival_delay = mean(arr_delay, na.rm = TRUE))
-avg_dep_arr_delay
+month_delay <- flights |> 
+  group_by(month) |> 
+  summarize(avg_dep_delay = mean(dep_delay, na.rm = TRUE),
+            avg_arr_delay = mean(arr_delay, na.rm = TRUE))
 ```
 
 ```{r}
-# Carriers with most average delay
-head(flights)
-avg_carrier_delay <- flights |> 
+carrier_delay <- flights |> 
   group_by(carrier) |> 
-  summarize(avg_departure_delay = mean(dep_delay, na.rm = TRUE),
-            avg_arrival_delay = mean(arr_delay, na.rm = TRUE))
-avg_carrier_delay
+  summarize(avg_carr_dep_delay = mean(dep_delay, na.rm = TRUE),
+            avg_carr_arr_delay = mean(arr_delay, na.rm = TRUE))
 ```
 
-# Arranging 
-Reordering the rows of a dataset
+# Arranging
 ```{r}
-# Most Delayed Flight
-flights |> 
-  arrange(desc(dep_delay))
-```
-
-```{r}
-# Flights that left the earliest
-flights |> 
-  arrange(arr_delay)
+carrier_delay |> 
+  arrange(desc(avg_carr_dep_delay))
 ```
 
 # Filtering
-Pick observations by their values in a dataset
-
 ```{r}
-# Check for the range of Arrival and departure delays
-range(flights$arr_delay, na.rm = TRUE)
-range(flights$dep_delay, na.rm = TRUE)
-
-```
-
-```{r}
-# Check for flights with arrival and departuredelay above 1000
-delay_arr_more_than_1000 <- flights |> 
-  filter(arr_delay >= 1000 | dep_delay > 1000)
-delay_morethan_1000
-```
-
-
-```{r}
-# Flights with no delay
 flights |> 
-  filter(arr_delay == 0 & dep_delay == 0)
-  
-```
+  filter(month == 1 & dep_delay < 0 & arr_delay < 0)
 
+carrier_delay
+```
 
 # Selecting
-Select variables by their names
 ```{r}
-# Select dep_time, dep_delay, arr_time, arr_delay
 flights |> 
-  select(dep_time, dep_delay, arr_time, arr_delay)
+  select(!(hour:time_hour))
 ```
-
-```{r}
-# another way(select by their index numbers)
-flights |> 
-  select(4,6,7,9)
-```
-
-```{r}
-# another way
-flights |> 
-  select(dep_time:arr_delay, -c(5,8))
-```
-
-```{r}
-#select all variables except the arrival and departure delay
-flights |> 
-  select(!c(arr_delay, dep_delay))
-```
-
-
-## Selection Helpers
-1. starts_with()
-2. ends_with()
-3. contains()
-
 
 # Creating Variables
 ```{r}
-#  Create New variable Speed
-flights |> 
-  mutate(speed = distance/air_time*60, .keep = "used") |> 
-  arrange(speed)
+carrier_speed <- flights |> 
+  mutate(speed = distance/(air_time/60)) |> 
+  select(carrier, speed) |> 
+  group_by(carrier) |> 
+  summarize(avg_speed = mean(speed, na.rm = TRUE)) |> 
+  arrange(desc(avg_speed))
 ```
+
 
 ```{r}
-# Keep only speed variable
 flights |> 
-  transmute(speed = distance/air_time*60) |> 
-  arrange(speed)
+  mutate(speed = distance/(air_time/60), .keep = "all")
 ```
 
-# Renaming 
 
+# Renaming
 ```{r}
-# rename dep_time to departure time
 flights |> 
-  rename(departure_time = dep_time)
+  rename(destination = dest)
 ```
-
 
 # Mutating Joins
-Mutating joins adds new variables to a data, from matching observations in another.
 ```{r}
-#inner join
-inner_join(x = avg_carrier_delay, 
+top5_carrier_speed <- carrier_speed |> 
+  head(5)
+top5_carrier_speed
+```
+
+```{r}
+full_join(x = top5_carrier_speed, 
+           y = airlines, 
+           by = "carrier")
+
+inner_join(x = carrier_delay, 
            y = airlines, 
            by = "carrier") |> 
-  arrange(desc(avg_departure_delay))
+  select(carrier, name, avg_carr_dep_delay, avg_carr_arr_delay) |> 
+  arrange(avg_carr_dep_delay) |> 
+  head(5)
 ```
 
 ```{r}
-#left join
-left_join(x = delay_arr_more_than_1000, 
-          y = airlines, 
-          by = "carrier")
-
+inner_join(x = top5_carrier_speed, y = airlines, by = "carrier")
 ```
 
+# Filtering Join
 ```{r}
-#right join
-right_join(x = airlines, 
-           y = delay_arr_more_than_1000, 
-           by = "carrier")
-```
-
-```{r}
-#full join
-full_join(x = delay_arr_more_than_1000, 
-          y = airlines, 
+anti_join(x = airlines,
+          y = top5_carrier_speed,
           by = "carrier")
 ```
 
-
-# Filtering Joins
-Filtering joins filters matching observations, based on whether they match or not.
-1. semi_join() Keeps all observations in X that have a match in y
-2. anti_join() drops all observations in x that have a match in y
-
-```{r}
-# Top 10 most popular destination
-top_dest <- flights %>%
-  count(dest, sort = TRUE) %>%
-  head(10)
-top_dest
-```
-
-```{r}
-# using semi join to filter it out from flights data
-semi_join(x = flights, y = top_dest)
-```
-
-```{r}
-anti_join(x = flights, 
-          y = top_dest)
-```
-
-# Exercise
+# Exercises and Solutions
 
 ## Question 1
 Using the flights data set, which carrier have the highest average speed.
 Note: Remember to set na.rm = TRUE when calculating the average speed.
-1. Hawaiian Airlines Inc. 
+1. Hawaiian Airlines Inc. - ANSWER
 2. Virgin America
 3. Alaska Airlines Inc.
 4. Frontier Airlines Inc.
@@ -258,7 +173,7 @@ How many flights in the month of December had no departure and  arrrival delay.
 1.39
 2.37
 3.32
-4.31
+4.31 ANSWER
 5.34
 ```{r}
 flights |> 
@@ -268,7 +183,7 @@ flights |>
 ## Question 3
 What is the distance covered in Kilometers for the flight with id number 4646 and tailnum N273WN. Note: A mile is 1.6 Kilometers
 1. 115.625 Kilometers
-2. 296 Kilometers
+2. 296 Kilometers - ANSWER
 3. 290 Kilometers
 4. 78 Kilometers
 5. 234 Kilometers
@@ -277,7 +192,8 @@ flight_4646_N273WN <- flights |>
   filter(flight == 4646 & tailnum == "N273WN") |> 
   mutate(dist_kil = distance*1.6)
 
-flight_4646_N273WN
+flight_4646_N273WN |> 
+  select(dist_kil)
 ```
 
 ## Question 4
@@ -285,12 +201,36 @@ The manufacturer of the plane in Question 3 is:
 1. SIKORSKY
 2. EMBRAER
 3. AIRBUS
-4. BOEING
+4. BOEING - ANSWER
 5. GULFSTREAM AEROSPACE
 ```{r}
 inner_join(x = flight_4646_N273WN,
            y = planes, 
            by = "tailnum") |> 
   select(manufacturer)
+```
+## Question 5
+What is the tailnum of the fastest Air Plane departing New York.
+1. N819AW
+2. N382HA
+3. N654UA
+4. N228UA - ANSWER
+5. N315AS
+
+```{r}
+plane_speed <- flights |> 
+  mutate(speed = distance/(air_time/60)) |> 
+  select(tailnum, speed) |> 
+  group_by(tailnum) |> 
+  summarize(avg_speed = mean(speed, na.rm = TRUE)) |> 
+  arrange(desc(avg_speed)) |> 
+  head(5)
+
+plane_speed
+```
+```{r}
+inner_join(x = plane_speed,
+           y = planes,
+           by = "tailnum")
 ```
 
