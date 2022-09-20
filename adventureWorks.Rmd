@@ -1,0 +1,107 @@
+---
+title: 'Case Study: Adventure Works'
+author: "Adejumo Ridwan Suleiman"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Install Packages
+```{r}
+#install remotes
+#install.packages("remotes")
+
+#install and load adventure works database
+remotes::install_github("adejumoridwan/adventureWorks")
+library(adventureWorks)
+
+#install tidyverse
+library(tidyverse)
+
+```
+
+# Data in the database
+- sales
+- customers
+- products
+- budget
+- calendar
+- territory
+
+# Total Sales Made in each product sub category
+```{r}
+inner_join(x = sales, 
+           y = products,
+           by = "ProductKey") |> 
+  group_by(Category,SubCategory) |> 
+  summarize(Total_Sales = round(sum(SalesAmount))) |> 
+  arrange(desc(Total_Sales))
+
+```
+
+# Profit Margin made in each Product category
+```{r}
+inner_join(x = sales, 
+           y = products,
+           by = "ProductKey") |> 
+  mutate(Profit_Margin = 
+           (SalesAmount - ProductStandardCost)/sum(SalesAmount)*100)|> 
+  group_by(Category,SubCategory) |> 
+  summarize(Total_Profit_Margin = sum(Profit_Margin)) |> 
+  arrange(desc(Total_Profit_Margin)) |> 
+  ggplot(aes(x = Total_Profit_Margin,
+             y = reorder(SubCategory, Total_Profit_Margin),
+             fill = Category)) +
+  geom_col() +
+  labs(x = "Profit Margin",
+       y = "Products Sub Category",
+       title = "Profit Margin for each Product Subcategory")
+```
+
+# Profit Margin of Sales over time
+```{r}
+sales |> 
+  mutate(Profit_Margin = 
+           (SalesAmount - ProductStandardCost)/sum(SalesAmount)*100,
+         OrderDate = lubridate::dmy(OrderDate)) |> 
+  group_by(OrderDate) |> 
+  summarize(Profit_Margin = sum(Profit_Margin)) |> 
+  ggplot(aes(x = OrderDate,
+             y = Profit_Margin)) +
+  geom_line() +
+  labs(x = "Order Date",
+       y = "Profit Margin",
+       title = "Profit Margin of Sales over time")
+```
+
+# What happened in 2019
+```{r}
+sales |> 
+  mutate(Profit_Margin = 
+           (SalesAmount - ProductStandardCost)/sum(SalesAmount)*100,
+         OrderDate = lubridate::dmy(OrderDate)) |> 
+  group_by(OrderDate) |> 
+  summarize(Profit_Margin = sum(Profit_Margin)) |> 
+  filter(OrderDate >= "2019-01-01") |> 
+  ggplot(aes(x = OrderDate,
+             y = Profit_Margin)) +
+  geom_line() +
+  labs(x = "Order Date",
+       y = "Profit Margin",
+       title = "Profit Margin of Sales over time")
+```
+
+# What happened after July
+```{r}
+inner_join(x = sales, 
+           y = products,
+           by = "ProductKey") |>  
+  mutate(Profit_Margin = 
+           (SalesAmount - ProductStandardCost)/sum(SalesAmount)*100,
+         OrderDate = lubridate::dmy(OrderDate)) |> 
+  filter(OrderDate >= "2019-07-01") |> 
+  group_by(Category) |> 
+  summarize(Profit_Margin = sum(Profit_Margin))
+```
+So products belonging to bike categories were not sold, no wonder sales dropped
+
+

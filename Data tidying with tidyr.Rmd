@@ -1,0 +1,43 @@
+---
+title: "Date Tidying with tidyr"
+author: "Adejumo Ridwan Suleiman"
+date: '`r Sys.Date()`'
+output: html_document
+---
+
+# Installing and loading tidyr
+```{r}
+#install.package("tidyr)
+library(tidyr)
+```
+
+
+# Religeon and Income Survey dataset
+```{r}
+head(relig_income)
+```
+
+# US Rent Income dataset
+```{r}
+head(us_rent_income)
+```
+
+
+# Reshaping with Pivot longer
+```{r}
+relig_income %>%
+  pivot_longer(!religion, 
+               names_to = "income", 
+               values_to = "count")
+```
+
+# Reshaping with Pivot wider
+```{r}
+us_rent_income %>%
+  pivot_wider(
+    names_from = variable,
+    values_from = estimate,
+    values_fill = 0
+  )
+```
+
