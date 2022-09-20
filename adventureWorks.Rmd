@@ -104,4 +104,36 @@ inner_join(x = sales,
 ```
 So products belonging to bike categories were not sold, no wonder sales dropped
 
+# Customers where most profit were made from
+```{r}
+inner_join(x = sales, 
+           y = customers,
+           by = "CustomerKey") |> 
+  mutate(Profit_Margin = 
+           (SalesAmount - ProductStandardCost)/sum(SalesAmount)*100) |> 
+  group_by(Occupation, MaritalStatus, Gender) |> 
+  summarize(Total_Profit = sum(Profit_Margin)) |>
+  arrange(desc(Total_Profit))
+```
+
+# What do single females but the most
+```{r}
+inner_join(x = sales, 
+           y = customers,
+           by = "CustomerKey") |> 
+  inner_join(y = products,
+              by = "ProductKey") |> 
+  mutate(Profit_Margin = 
+           (SalesAmount - ProductStandardCost)/sum(SalesAmount)*100) |> 
+  filter(Occupation == "Professional",
+         MaritalStatus == "S",
+         Gender == "F") |> 
+  group_by(Category, SubCategory) |> 
+  summarize(Total_Sales = sum(ExtendedAmount)) |> 
+  arrange(desc(Total_Sales))
+```
+
+
+
+
 
