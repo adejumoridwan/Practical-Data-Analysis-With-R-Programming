@@ -116,15 +116,20 @@ inner_join(x = sales,
   arrange(desc(Total_Profit))
 ```
 
-# What do single females but the most
+# Exercises
+
+# Question 1
+Which sub category was sales made most from for single female.  
+1. Touring Bikes
+2. Mountain Bikes
+3. Helmets
+4. None of the Above - Ans
 ```{r}
 inner_join(x = sales, 
            y = customers,
            by = "CustomerKey") |> 
   inner_join(y = products,
               by = "ProductKey") |> 
-  mutate(Profit_Margin = 
-           (SalesAmount - ProductStandardCost)/sum(SalesAmount)*100) |> 
   filter(Occupation == "Professional",
          MaritalStatus == "S",
          Gender == "F") |> 
@@ -133,6 +138,40 @@ inner_join(x = sales,
   arrange(desc(Total_Sales))
 ```
 
+## Question 2
+Calculate the total tax on the item category Bikes.  
+1. 2,265,451.62 - Ans
+2. 56,060.80
+3. 27,181.81
+4. None of the Above
 
+```{r}
+inner_join(x = sales, 
+           y = products,
+           by = "ProductKey") |> 
+  group_by(Category) |> 
+  summarize(Total_Tax = sum(TaxAmt)) |> 
+  arrange(desc(Total_Tax))
+```
 
+## Question 3
+What is the total profit on bikes made from customers who are Professionals.
+Note: Profit = Selling Price - Cost Price.  
+1. 3,916,901  
+2. 3,912,902
+3. 3,716,902
+4. None of the Above - Ans
+```{r}
+inner_join(x = sales, 
+           y = customers,
+           by = "CustomerKey") |> 
+  inner_join(y = products,
+              by = "ProductKey") |>
+  mutate(Profit = SalesAmount - ProductStandardCost) |> 
+  filter(Occupation == "Professional") |> 
+  group_by(Category) |> 
+  summarize(Profit = sum(Profit)) |> 
+  filter(Category == "Bikes")
+```
+ 
 
