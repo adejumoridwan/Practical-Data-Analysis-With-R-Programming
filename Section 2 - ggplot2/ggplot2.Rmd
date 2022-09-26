@@ -2,7 +2,9 @@
 title: "Data Visualization With ggplot2"
 author: "Adejumo Ridwan Suleiman"
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 # Installing and Loading ggplot2
@@ -99,7 +101,7 @@ diamonds |>
 ```
 
 
-#Exercises and Solutions
+# Exercises and Solutions
 
 ## Question 1
 Using a boxplot to visualize diamond cut against depth percentage. Which diamond cut have the highest median depth percentage.
@@ -113,6 +115,7 @@ diamonds |>
   ggplot(mapping = aes(x = cut, y = depth, color = cut)) +
   geom_boxplot()
 ```
+
 ## Question 2
 Visualize using a line graph the change in United States Personal consumption expenditures in the economics data. In which year did the United States have the low personal consumption expenditure.
 1. 1967 - ANSWER
@@ -120,11 +123,13 @@ Visualize using a line graph the change in United States Personal consumption ex
 3. 1999
 4. 2015
 5. 1990
+
 ```{r}
 economics |> 
   ggplot(mapping = aes(x = date, y = pce)) +
   geom_line()
 ```
+
 ## Question 3
 Using a suitable bin width, visualize the distribution of diamond carat in the diamonds data set. In which range of carat value do most diamonds fall in.
 1. 0.5 - 1.5 - ANSWER
@@ -136,6 +141,7 @@ diamonds |>
   ggplot(mapping = aes(x = carat)) +
   geom_histogram()
 ```
+
 # Question 4
 Which of the following can we use to plot a numerical variable against a numerical variable
 1. Box Plot

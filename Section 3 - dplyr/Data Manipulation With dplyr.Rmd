@@ -2,7 +2,9 @@
 title: "Data Manipulation With Dplyr"
 author: "Adejumo Ridwan Suleiman"
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 # Installing dplyr
@@ -228,6 +230,7 @@ plane_speed <- flights |>
 
 plane_speed
 ```
+
 ```{r}
 inner_join(x = plane_speed,
            y = planes,
